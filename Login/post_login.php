@@ -1,6 +1,10 @@
 <?php
 
-include("config.php");
+include("../config.php");
+	    if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
+
 	$username = $_POST['username'];
 	$password = $_POST['password'];
 	$type = $_POST['type'];
@@ -15,15 +19,22 @@ include("config.php");
 	$password = md5($password);
 
 
-	// mysqli_connect("localhost","root","");
-	// mysqli_select_db("mess_rating");
-
 	$result = mysqli_query($db,"SELECT * FROM $type WHERE username = '$username' AND password = '$password'") or die("Failed".mysqli_error($db));
 
 	$row = mysqli_fetch_array($result, MYSQLI_ASSOC);
 
 	if ($row['username'] == $username && $row['password'] == $password){
-		echo "Login Success wlecome ".$row['name'];
+		$_SESSION['user'] =  $username;
+		$_SESSION['type'] =  $type;
+		 if($type== 'students')
+		{	echo "YEs";
+			 header("Location: http://{$_SERVER['HTTP_HOST']}/Student/home.php");
+			exit();
+		}
+		//else
+		// {
+		// 	header("Location : Student/home.php");
+		// }
 	}
 	else{
 		echo "Login Failed";

@@ -8,7 +8,23 @@ include("../config.php");
 	$username = $_POST['username'];
 	$password = $_POST['password'];
 	$type = $_POST['type'];
+	if($username=='admin')
+	{
+		if($password=='admin')
+		{
+			$_SESSION['user'] =  $username;
+			$_SESSION['type'] =  'admin';
+			header("Location: http://{$_SERVER['HTTP_HOST']}/Admin/admin.php");
+			exit();
+		}
+		else
+		{
+			$_SESSION['msg']="Login Failed";
+			header("Location: http://{$_SERVER['HTTP_HOST']}/Login/login.php");
+			exit();
+		}
 
+	}
 	$username = stripcslashes($username);
 	$password = stripcslashes($password);
 	$username = mysqli_real_escape_string($db,$username);
@@ -38,7 +54,9 @@ include("../config.php");
 		}
 	}
 	else{
-		echo "Login Failed";
+		$_SESSION['msg']="Login Failed";
+		header("Location: http://{$_SERVER['HTTP_HOST']}/Login/login.php");
+		exit();
 	}
 
 

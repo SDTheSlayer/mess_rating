@@ -10,6 +10,11 @@
         header("Location: http://{$_SERVER['HTTP_HOST']}/Student/home.php");
         exit();
       }
+      else if ($_SESSION['type']=='admin')
+      {
+        header("Location: http://{$_SERVER['HTTP_HOST']}/Admin/admin.php");
+        exit();
+      }
       
     }
     $username=$_SESSION['user'];
@@ -48,6 +53,7 @@
 ?>
 <html>
 <head>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 </head>
 <style>
 body {font-family: Arial;}
@@ -157,6 +163,7 @@ body {font-family: Arial;}
         echo $cur_mess_rating." : ".$mess_rating."<br>";
       }
     ?>
+
     <h3>Reviews of <?php echo $mess;?> for Given Month</h3>
     <?php
       $feedbacks_mess=mysqli_query($db,"SELECT * FROM feedback WHERE month = '$displaymonth' AND year = '$displayyear' AND mess='$mess' ") or die("Failed".mysqli_error($db));
@@ -167,12 +174,71 @@ body {font-family: Arial;}
     ?>
   </div>
 
+
+
   <div id="Notice" class="tabcontent">
     <h3>Notice</h3>
+    <?php
+      $noticemonth = date("m");
+      $noticeyear=date("Y");
+      if($noticemonth==1)
+      {
+        $noticemonth=12;
+        $noticeyear-=1;
+      }
+      else
+      {
+        $noticemonth-=1;
+      }
+      $reviews_all=mysqli_query($db,"SELECT * FROM feedback WHERE month = '$noticemonth' AND year = '$noticeyear' AND mess='$mess' ") or die("Failed".mysqli_error($db));
+      $notice_mess_rating=0;
+      $notice_mess_count=0;
+      while($cur_review = mysqli_fetch_array($reviews_all, MYSQLI_ASSOC))
+      {
+        $notice_review_total=0;
+        $notice_review_count=0;
+        $notice_words = preg_split("/[\s,_-]+/", strtolower($cur_review['text']));
+        foreach ($notice_words as $notice_w)
+        {
+          $notice_sqlstring="SELECT * FROM keyword WHERE word = '$notice_w'";
+          $notice_value_table=mysqli_query($db,$notice_sqlstring);
+          while($notice_wordrow = mysqli_fetch_array($notice_value_table, MYSQLI_ASSOC))
+          {
+            $notice_wordvalue=$notice_wordrow['points'];
+            $notice_review_total+=$notice_wordvalue;
+            $notice_review_count+=1;
+          }
+        }
+        if($notice_review_count>0)
+        {
+          $notice_review_rating = $notice_review_total/$notice_review_count;
+          $notice_mess_rating*=$notice_mess_count;
+          $notice_mess_count+=1;
+          $notice_mess_rating+=$notice_review_rating;
+          $notice_mess_rating/=$notice_mess_count;
+        }
+
+      }
+      if($notice_mess_count==0)
+      {
+        $notice_mess_rating=5;
+      }
+      if($notice_mess_rating<2.5)
+      {
+        $dateObj   = DateTime::createFromFormat('!m', $noticemonth);
+        $monthName = $dateObj->format('F');
+        echo "Notice Issued for ".$monthName."<br>";
+        echo "Rating :  ".$notice_mess_rating."<br>";
+        echo "No of Reviews : ".$notice_mess_count."<br>";
+      }
+
+    ?>
   </div>
 
+
+
   <div id="ChangePassword" class="tabcontent">
-    <form method="POST" action="Password_Change.php">
+    <form method="POST" action="Password_Change.php" onsubmit="return validatepasswords()" name="passwordForm">
       <div >
         <label>Old Password</label>
         <input type="password" name="old_password" placeholder="Old Password" required>
@@ -207,6 +273,19 @@ body {font-family: Arial;}
     function defaultload() {
             document.getElementsByClassName('tablinks')[<?php echo $tabindex ?>].click()
         }
+
+    function validatepasswords() {
+      var x = document.forms["passwordForm"]["new_password"].value;
+      var y = document.forms["passwordForm"]["re_password"].value;
+      if (x != y) {
+        window.alert("Passwords Dont match");
+        return false;
+      }
+      return true;
+    }
   </script>
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
 </body>
 </html>

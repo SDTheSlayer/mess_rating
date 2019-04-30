@@ -1,11 +1,19 @@
 <?php
 
+   if (session_status() == PHP_SESSION_NONE) {
+      session_start();
+    }
+
 include("config.php");
 	$username = $_POST['username'];
 	$password = $_POST['password'];
 
 	$mess = $_POST['mess'];
 	$name = $_POST['name'];
+
+$_SESSION['tabadmin']=3;
+
+
 
 
 	$username = stripcslashes($username);
@@ -45,10 +53,12 @@ $result1 = mysqli_query($db,"SELECT * FROM mess_manager WHERE username = '$usern
 
 
 	if ($row1['username'] == $username){
-		echo "There already exist this username";
 
+    $_SESSION['msg']="There already exist this username";
+	header("Location: http://{$_SERVER['HTTP_HOST']}/mess_rating/Admin/admin.php");
+	exit();
 
-		// you are in the wrong page 
+	// you are in the wrong page 
 	}
 
 	else{
@@ -56,11 +66,19 @@ $result1 = mysqli_query($db,"SELECT * FROM mess_manager WHERE username = '$usern
 
 
 		if (mysqli_query($db, "UPDATE  mess_manager SET username = '$username', password = '$password', name = '$name' WHERE mess = '$mess'")) {
-		    echo "Record Updated Successfully ";
-		
+		    
+    $_SESSION['msg']="Record Updated Successfully";
+	header("Location: http://{$_SERVER['HTTP_HOST']}/mess_rating/Admin/admin.php");
+	exit();
+
 		} 
 
 	}
+
+	header("Location: http://{$_SERVER['HTTP_HOST']}/mess_rating/Admin/admin.php");
+	exit();
+
+
 
 	
 	?>

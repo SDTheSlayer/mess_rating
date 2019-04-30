@@ -1,3 +1,50 @@
+<?php
+    if (session_status() == PHP_SESSION_NONE) {
+      session_start();
+    }
+
+	include("config.php");
+    // $rollno=$_SESSION['user'];
+    // $result = mysqli_query($db,"SELECT * FROM students WHERE username = '$rollno' ") or die("Failed".mysqli_error($db));
+    // $row = mysqli_fetch_array($result, MYSQLI_ASSOC);
+    // $current_mess=$row['mess'];
+    // $next_mess=$row['next_mess'];
+    // $password=$row['password'];
+    // $name=$row['name'];
+    // $hostel = $row['hostel'];
+    // $msg='';
+    $msg="";
+    if(isset($_SESSION['msg']))
+    {
+      $msg = $_SESSION['msg'];
+      unset($_SESSION['msg']);
+    }
+
+
+    $tabindex=0;
+    if(isset($_SESSION['tabadmin']))
+    {
+      $tabindex=$_SESSION['tabadmin'];
+      unset($_SESSION['tabadmin']);
+    }
+
+    // $month = date("m");
+    // $year=date("Y");
+    // $result_feedback= mysqli_query($db,"SELECT * FROM feedback WHERE rollno = '$rollno' AND month = '$month' AND year = '$year' ") or die("Failed".mysqli_error($db));
+    // $feedbackrow = mysqli_fetch_array($result_feedback, MYSQLI_ASSOC);
+    // $feedback= $feedbackrow['text'];
+    // $tabindex=0;
+    // // if(isset($_SESSION['tabstudent']))
+    // {
+    //   $tabindex=$_SESSION['tabstudent'];
+    //   unset($_SESSION['tabstudent']);
+    // }
+?>
+
+
+
+
+<html>
 
 
 <style>
@@ -77,6 +124,11 @@ body {font-family: Arial;}
 </style>
 
 
+<body onload="defaultload()">
+
+
+  <h4><?php echo $msg; ?></h4>
+
 
 
 
@@ -85,7 +137,7 @@ body {font-family: Arial;}
   <button class="tablinks" onclick="openCity(event, 'Paris')">Remove User</button>
   <button class="tablinks" onclick="openCity(event, 'Tokyo')">Add Mess</button>
   <button class="tablinks" onclick="openCity(event, 'Delhi')">Update Mess</button>
-  <button class="tablinks" onclick="openCity(event, 'Mumbai')">Update Mess</button>
+  <button class="tablinks" onclick="openCity(event, 'Mumbai')">Key Words</button>
 </div>
 
 
@@ -111,8 +163,6 @@ body {font-family: Arial;}
 
 	  <?php
 
-		include("config.php");
-
 		echo '<select name="mess">';
 			$result = mysqli_query($db,"SELECT mess FROM  mess_manager ") or die("Failed".mysqli_error($db));
 
@@ -127,37 +177,12 @@ body {font-family: Arial;}
 
 	  ?>
       </div>
-<!-- 
-	  <div>
-
-
-	    <label>Hostel</label>
-		<select name = "hostel">
-			<option value ="Umiam">Umiam</option>
-			<option value ="Kameng">Kameng</option>
-			<option value ="Barak">Barak</option>
-			<option value ="Manas">Manas</option>
-			<option value ="Dihing">Dihing</option>
-			<option value ="Brahmaputra">Brahmaputra</option>
-			<option value ="Lohit">Lohit</option>
-			<option value ="Siang">Siang</option>
-			<option value ="Kapili">Kapili</option>
-			<option value ="Dibang">Dibang</option>
-			<option value ="Subansiri">Subansiri</option>
-			<option value ="Dhansiri">Dhansiri</option>
-
-		</select>
-	    
-
-	  </div>
- -->
-
 
 
 
 	  <div >
 	    <label>Roll No</label>
-	    <input type="number" name="username" maxlength="9" placeholder="Roll No" required>
+	    <input type="number" name="username" step="1"  min="100000000" max="999999999" maxlength="9" placeholder="Roll No" required>
 	  </div>
 	  <div class="form-group">
 	    <label>Password</label>
@@ -185,7 +210,7 @@ body {font-family: Arial;}
 
 		<div >
 		    <label>Roll No</label>
-		    <input type="number" name="username" maxlength="9" placeholder="Roll No" required>
+		    <input type="number" name="username" step="1"  min="100000000" max="999999999" maxlength="9" placeholder="Roll No" required>
 		 </div>
 
 	  <button type="submit" name="remove" >Remove User</button>
@@ -299,7 +324,7 @@ body {font-family: Arial;}
 
 
 <div id="Mumbai" class="tabcontent">
-	<h3>Remove User</h3>
+	<h3>Key Words</h3>
 	<form method="POST" action="add_word.php">
 
 
@@ -308,7 +333,7 @@ body {font-family: Arial;}
 		    <label>Word</label>
 		    <input type="text" name="word"  placeholder="Word" required>
 		    <label>Value</label>
-		    <input type="number" name="value" min="0" max="10" placeholder="0" required>
+		    <input type="number" name="points" step="1" min="0" max="10" placeholder="0" required>
 		  <button type="submit" name="add" >Add Word</button>
 	
 
@@ -329,10 +354,14 @@ body {font-family: Arial;}
 		
 			$result = mysqli_query($db,"SELECT * FROM  keyword ") or die("Failed".mysqli_error($db));
 
+
 			while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC))
 			{
-				echo '<form action="delete_word.php?delete='.htmlspecialchars($row['word']).'">'.' Word:'.htmlspecialchars($row['word']).'<br> Score:'.htmlspecialchars($row['points']).'<button type="submit" name="delete">Delete Word</button></form>';
+				echo '<form method=POST action="delete_word.php'.'">'.' Word:'.htmlspecialchars($row['word']).'<br> Score:'.htmlspecialchars($row['points']).'<button type="submit" name="delete"'.' value='.htmlspecialchars($row['word']).'>Delete Word</button>'.'</form>';
 			}
+
+
+			
 			
 		echo '</select>';
 
@@ -344,6 +373,8 @@ body {font-family: Arial;}
 
 
 </div>
+
+</body>
 
 
 
@@ -366,4 +397,10 @@ function openCity(evt, cityName) {
   document.getElementById(cityName).style.display = "block";
   evt.currentTarget.className += " active";
 }
+
+ function defaultload() {
+            document.getElementsByClassName('tablinks')[<?php echo $tabindex ?>].click()
+        }
 </script>
+
+</html>

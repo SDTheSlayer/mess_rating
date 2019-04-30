@@ -1,5 +1,19 @@
 <?php
+
+
+
+   if (session_status() == PHP_SESSION_NONE) {
+      session_start();
+    }
+
 include("config.php");
+
+
+$_SESSION['tabadmin']=1;
+
+
+
+
 
 	$username = $_POST['username'];
 	$username = stripcslashes($username);
@@ -13,7 +27,14 @@ include("config.php");
 	if ($row['username'] == $username){
 
 		if (mysqli_query($db, "DELETE FROM students WHERE username = '$username'")) {
-		    echo "Record Deleted Successfuly";
+
+
+		    $_SESSION['msg']="Record Deleted Successfuly";
+
+
+  header("Location: http://{$_SERVER['HTTP_HOST']}/mess_rating/Admin/admin.php");
+  exit();
+
 		
 
 
@@ -25,12 +46,24 @@ include("config.php");
 
 
 
-		echo "There exists no user with this roll number";
+
+		    $_SESSION['msg']="There exists no user with this roll number";
 
 
+  header("Location: http://{$_SERVER['HTTP_HOST']}/mess_rating/Admin/admin.php");
+  exit();
+
+		
 
 
 	}
+
+
+
+  header("Location: http://{$_SERVER['HTTP_HOST']}/mess_rating/Admin/admin.php");
+  exit();
+
+	
 
 
 

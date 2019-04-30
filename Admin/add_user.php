@@ -1,12 +1,23 @@
 <?php
 
+
+   if (session_status() == PHP_SESSION_NONE) {
+      session_start();
+    }
+
+
 include("config.php");
 	$username = $_POST['username'];
 	$password = $_POST['password'];
 
 	$mess = $_POST['mess'];
 	$name = $_POST['name'];
-	$hostel = $_POST['hostel'];
+
+	
+$_SESSION['tabadmin']=0;
+
+
+	// $hostel = $_POST['hostel'];
 
 
 	$username = stripcslashes($username);
@@ -30,15 +41,6 @@ include("config.php");
 
 	$password = md5($password);
 
-
-
-
-
-
-
-	// mysqli_connect("localhost","root","");
-	// mysqli_select_db("mess_rating");
-
 	$result = mysqli_query($db,"SELECT * FROM students WHERE username = '$username'") or die("Failed".mysqli_error($db));
 
 	$row = mysqli_fetch_array($result, MYSQLI_ASSOC);
@@ -46,12 +48,14 @@ include("config.php");
 
 
 
-
 	if ($row['username'] == $username){
-		echo "There exists a user already with this Roll Number";
+
+				 $_SESSION['msg']="There exists a user already with this Roll Number";
 
 
-		// you are in the wrong page 
+  header("Location: http://{$_SERVER['HTTP_HOST']}/mess_rating/Admin/admin.php");
+  exit();
+
 	}
 
 	else{
@@ -60,16 +64,25 @@ include("config.php");
 
 		if (mysqli_query($db, "INSERT INTO students (username, password, mess, next_mess, hostel, name)
 VALUES ('$username', '$password', '$mess', '$mess', '$mess', '$name')")) {
-		    echo "New record created successfully";
-		
+		    
+
+					 $_SESSION['msg']="New user created successfully";
 
 
-		}
+  header("Location: http://{$_SERVER['HTTP_HOST']}/mess_rating/Admin/admin.php");
+  exit();
+
+	}
 
 
 
 
 	}
+
+  header("Location: http://{$_SERVER['HTTP_HOST']}/mess_rating/Admin/admin.php");
+  exit();
+
+	
 
 	
 	?>

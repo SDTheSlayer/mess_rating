@@ -1,19 +1,25 @@
 <?php
 
+   if (session_status() == PHP_SESSION_NONE) {
+      session_start();
+    }
+
+
 include("config.php");
 	
-	$word = $_GET['delete'] ;
-echo '$word';
+	$word = $_POST['delete'] ;
 
 
+$_SESSION['tabadmin']=4;
 
 
-	// mysqli_connect("localhost","root","");
-	// mysqli_select_db("mess_rating");
+	mysqli_query($db,"DELETE FROM keyword WHERE word = '$word'") or die("Failed".mysqli_error($db));
 
-// 	mysqli_query($db,"DELETE FROM keyword WHERE word = '$word'") or die("Failed".mysqli_error($db));
 
-// echo 'DEleted Successfully';
+    $_SESSION['msg']="Deleted Successfully";
+	header("Location: http://{$_SERVER['HTTP_HOST']}/mess_rating/Admin/admin.php");
+	exit();
+
 
 	
 	?>

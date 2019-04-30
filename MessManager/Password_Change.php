@@ -28,7 +28,7 @@ include("../config.php");
 	else{
 		$_SESSION['msg']="Old Password is incorrect";
 	}
-	$_SESSION['tabmess']=2;
+	$_SESSION['tabmess']=3;
 	header("Location: http://{$_SERVER['HTTP_HOST']}/MessManager/home.php");
 	exit();
 

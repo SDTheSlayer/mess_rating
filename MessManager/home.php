@@ -98,6 +98,7 @@ body {font-family: Arial;}
   <div class="tab">
     <button class="tablinks" id="defaultOpen" onclick="openTab(event, 'Update')">Profile</button>
     <button class="tablinks" onclick="openTab(event, 'MessRatings')">Mess Ratings</button>
+    <button class="tablinks" onclick="openTab(event, 'Notice')">Notice</button>
     <button class="tablinks" onclick="openTab(event, 'ChangePassword')">Change Password</button>
   </div>
 
@@ -166,6 +167,9 @@ body {font-family: Arial;}
     ?>
   </div>
 
+  <div id="Notice" class="tabcontent">
+    <h3>Notice</h3>
+  </div>
 
   <div id="ChangePassword" class="tabcontent">
     <form method="POST" action="Password_Change.php">

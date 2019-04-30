@@ -5,22 +5,20 @@
     include("../config.php");
     if(isset($_SESSION['type']))
     {
-      if($_SESSION['type']=='mess_manager')
+      if($_SESSION['type']=='students')
       {
-        header("Location: http://{$_SERVER['HTTP_HOST']}/MessManager/home.php");
+        header("Location: http://{$_SERVER['HTTP_HOST']}/Student/home.php");
         exit();
       }
       
     }
-    $rollno=$_SESSION['user'];
+    $username=$_SESSION['user'];
 
-    $result = mysqli_query($db,"SELECT * FROM students WHERE username = '$rollno' ") or die("Failed".mysqli_error($db));
+    $result = mysqli_query($db,"SELECT * FROM mess_manager WHERE username = '$username' ") or die("Failed".mysqli_error($db));
     $row = mysqli_fetch_array($result, MYSQLI_ASSOC);
-    $current_mess=$row['mess'];
-    $next_mess=$row['next_mess'];
+    $mess=$row['mess'];
     $password=$row['password'];
     $name=$row['name'];
-    $hostel = $row['hostel'];
     $msg='';
     if(isset($_SESSION['msg']))
     {
@@ -29,14 +27,11 @@
     }
     $month = date("m");
     $year=date("Y");
-    $result_feedback= mysqli_query($db,"SELECT * FROM feedback WHERE rollno = '$rollno' AND month = '$month' AND year = '$year' ") or die("Failed".mysqli_error($db));
-    $feedbackrow = mysqli_fetch_array($result_feedback, MYSQLI_ASSOC);
-    $feedback= $feedbackrow['text'];
     $tabindex=0;
-    if(isset($_SESSION['tabstudent']))
+    if(isset($_SESSION['tabmess']))
     {
-      $tabindex=$_SESSION['tabstudent'];
-      unset($_SESSION['tabstudent']);
+      $tabindex=$_SESSION['tabmess'];
+      unset($_SESSION['tabmess']);
     }
     if(isset($_SESSION['month']))
     {
@@ -96,68 +91,21 @@ body {font-family: Arial;}
 </style>
 <body onload="defaultload()" >
      <h2> Hello! <?php echo $name; ?></h2> 
-     <h5><a href="../Login/logout.php">Logout</a>
+          <h5><a href="../Login/logout.php">Logout</a>
      </h5>
      <h4><?php echo $msg; ?></h4>
 
   <div class="tab">
-    <button class="tablinks" id="defaultOpen" onclick="openTab(event, 'Update')">Update Profile</button>
-    <button class="tablinks" onclick="openTab(event, 'Feedback')">Feedback</button>
+    <button class="tablinks" id="defaultOpen" onclick="openTab(event, 'Update')">Profile</button>
     <button class="tablinks" onclick="openTab(event, 'MessRatings')">Mess Ratings</button>
     <button class="tablinks" onclick="openTab(event, 'ChangePassword')">Change Password</button>
   </div>
 
   <div id="Update" class="tabcontent">
     Name : <?php echo $name; ?><br>
-    Roll NO: <?php echo $rollno; ?><br>
-    Hostel : <?php echo $hostel; ?><br>
-    Current Mess: <?php echo $current_mess; ?><br>
-    <form method="POST" action="Update_Mess.php">
-      <div class="form-group">
-        <label>Mess for Next Month</label>
-        <?php
-          echo '<select name="mess">';
-            $result = mysqli_query($db,"SELECT mess FROM  mess_manager ") or die("Failed".mysqli_error($db));
-            while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC))
-            {
-              if($row['mess']==$next_mess)
-              {
-                echo '<option selected="selected" value="' . htmlspecialchars($row['mess']) . '">' . htmlspecialchars($row['mess']) 
-                  . '</option>';
-              }
-              else
-              {
-                echo '<option value="' . htmlspecialchars($row['mess']) . '">' . htmlspecialchars($row['mess']) 
-                  . '</option>';
-              }
-            }
-          echo '</select>';
-        ?>
-      </div>
-      <button type="submit" name="mess_button" value="Yes" >Update</button>
-    </form>
-    </div>
-
-
-
-
-
-
-  <div id="Feedback" class="tabcontent">
-    <h3>Feedback For <?php echo date("F") ?></h3>
-    <form method="POST" action="Feedback_Submit.php">
-      <label>Current Mess : <?php echo $current_mess; ?></label>
-      <div >
-        <label>Your Feedback </label>
-        <input type="text" name="feedback" placeholder='Your Feedback' value='<?php echo $feedback ?>' required> 
-      </div>
-      <br>
-
-      <button type="submit" name="submit" >Post Feedback</button>
-    </form>
+    Username: <?php echo $username; ?><br>
+    Mess: <?php echo $mess; ?><br>
   </div>
-
-
 
 
   <div id="MessRatings" class="tabcontent">
@@ -208,9 +156,15 @@ body {font-family: Arial;}
         echo $cur_mess_rating." : ".$mess_rating."<br>";
       }
     ?>
-     
+    <h3>Reviews of <?php echo $mess;?> for Given Month</h3>
+    <?php
+      $feedbacks_mess=mysqli_query($db,"SELECT * FROM feedback WHERE month = '$displaymonth' AND year = '$displayyear' AND mess='$mess' ") or die("Failed".mysqli_error($db));
+      while($review = mysqli_fetch_array($feedbacks_mess, MYSQLI_ASSOC))
+      {
+        echo $review['text']."<br><br>";
+      }
+    ?>
   </div>
-
 
 
   <div id="ChangePassword" class="tabcontent">
@@ -230,6 +184,7 @@ body {font-family: Arial;}
       <button type="submit" name="submit" >Change Password</button>
     </form>
   </div>
+
 
   <script>
     function openTab(evt, TabName) {

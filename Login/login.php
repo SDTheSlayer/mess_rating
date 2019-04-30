@@ -3,7 +3,6 @@
 </head>
 
 <body>
-
   <form method="POST" action="post_login.php">
   <div >
     <label>Username</label>

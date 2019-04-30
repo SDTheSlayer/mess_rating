@@ -27,14 +27,15 @@ include("../config.php");
 		$_SESSION['user'] =  $username;
 		$_SESSION['type'] =  $type;
 		 if($type== 'students')
-		{	echo "YEs";
+		{	
 			 header("Location: http://{$_SERVER['HTTP_HOST']}/Student/home.php");
 			exit();
 		}
-		//else
-		// {
-		// 	header("Location : Student/home.php");
-		// }
+		else
+		{
+			header("Location: http://{$_SERVER['HTTP_HOST']}/MessManager/home.php");
+		 	exit();
+		}
 	}
 	else{
 		echo "Login Failed";
